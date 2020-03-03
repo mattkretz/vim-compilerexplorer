@@ -61,6 +61,9 @@ endfunction
 function! s:Compile()
     cclose
     silent call s:ApplyCompileSettings()
+    " trigger autowrite
+    silent !true
+    redraw!
     echo "Compiling. Please wait."
     redraw
 
