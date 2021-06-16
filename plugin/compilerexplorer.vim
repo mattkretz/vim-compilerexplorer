@@ -62,7 +62,7 @@ function! s:Compile()
     cclose
     silent call s:ApplyCompileSettings()
     " trigger autowrite
-    silent !true
+    silent! !true
     redraw!
     echo "Compiling. Please wait."
     redraw
@@ -75,12 +75,11 @@ function! s:Compile()
     normal ggdG
 
     "Start g:COMPILER_EXPLORER_COMPILER . " -x c++ -o - - | egrep -v -e '^\\s+\\.(weak|align|hidden|section|type|file|text|p2align|cfi|size|globl|ident)' -e '^.LF' > ce.tmp"
-    silent let l:tmp = append(line('$'), systemlist(g:COMPILER_EXPLORER_COMPILER . " -x c++ -o - - | egrep -v -e '^\\s+\\.(weak|align|hidden|section|type|file|text|p2align|cfi|size|globl|ident)' -e '^.LF' > ce.tmp", bufnr(s:buf_name)))
-    silent let l:tmp = append(line('$'), systemlist(g:COMPILER_EXPLORER_COMPILER . " -x c++ -o - - | egrep -v -e '^\\s+\\.(weak|align|hidden|section|type|file|text|p2align|cfi|size|globl|ident)' -e '^.LF' > ce.tmp", bufnr(s:buf_name)))
-    silent exec ":%s/^<stdin>/ce.cpp/e"
-    silent let l:tmp = append(line('$'), systemlist("awk -f ".s:root_path."/ce.awk ce.tmp | c++filt > ce.asm"))
-    silent let l:tmp = system("sed -n '/ret/q;p' ce.tmp | " . g:COMPILER_EXPLORER_MCA . " > ce.mca")
-    silent !rm ce.tmp
+    silent! let l:tmp = append(line('$'), systemlist(g:COMPILER_EXPLORER_COMPILER . " -x c++ -o - - | egrep -v -e '^\\s+\\.(weak|align|hidden|section|type|file|text|p2align|cfi|size|globl|ident)' -e '^.LF' > ce.tmp", bufnr(s:buf_name)))
+    silent! exec ":%s/^<stdin>/ce.cpp/e"
+    silent! let l:tmp = append(line('$'), systemlist("awk -f ".s:root_path."/ce.awk ce.tmp | c++filt > ce.asm"))
+    silent! let l:tmp = system("sed -n '/ret/q;p' ce.tmp | " . g:COMPILER_EXPLORER_MCA . " > ce.mca")
+    silent! !rm ce.tmp
     "silent let l:tmp = append(line('$'), systemlist("rm ce.tmp"))
     if getline(1, '$') == ['']
         bdelete
@@ -95,6 +94,15 @@ function! s:Compile()
     redraw!
 endfunction
 
+function! s:Quit()
+    exec ":bdelete " . bufnr(s:buf_name)
+    exec ":bdelete " . bufnr('ce.asm')
+    exec ":bdelete " . bufnr('ce.mca')
+    exec ":bdelete " . bufnr('Compiler Settings')
+    bdelete bufnr(s:buf_name)
+    unlet s:buf_name
+endfunction
+
 function! s:CompilerExplorer()
     if exists('s:buf_name')
         call s:Compile()
@@ -102,6 +110,8 @@ function! s:CompilerExplorer()
         silent tabedit ce.cpp
         let s:buf_name = bufname("%")
         setlocal noswapfile
+        setlocal autowrite
+        autocmd BufHidden,BufUnload <buffer>  call s:Quit()
         "autocmd CursorHold <buffer> call s:Compile()
 
         silent vertical botright split ce.asm
@@ -114,6 +124,7 @@ function! s:CompilerExplorer()
         setlocal wrap
         setlocal winfixwidth
         setlocal nospell
+        autocmd BufHidden,BufUnload <buffer>  call s:Quit()
 
         silent vertical botright split ce.mca
         silent vertical resize 100
@@ -125,12 +136,14 @@ function! s:CompilerExplorer()
         setlocal nowrap
         setlocal winfixwidth
         setlocal nospell
+        autocmd BufHidden,BufUnload <buffer>  call s:Quit()
 
         call s:CompileSettings()
+        autocmd BufHidden,BufUnload <buffer>  call s:Quit()
         let l:id = win_gotoid(bufwinid(s:buf_name))
     endif
 endfunction
 
-nmap <silent> <F6> :call <SID>CompilerExplorer()<CR>
+map <silent> <F6> :call <SID>CompilerExplorer()<CR>
 
 " vim: sw=4 et ai
