@@ -16,6 +16,7 @@ function! s:CompileSettings()
     setlocal bufhidden=hide
     setlocal noswapfile
     setlocal winfixheight
+    setlocal tw=0
     let l:old_undolevels = &undolevels
     set undolevels=-1
     normal ggdG
