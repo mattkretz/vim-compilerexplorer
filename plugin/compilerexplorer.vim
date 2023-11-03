@@ -12,6 +12,7 @@ endfunction
 function! s:CompileSettings()
     silent topleft split Compiler Settings
     silent resize 2
+    setlocal tw=1000
     setlocal buftype=nofile
     setlocal bufhidden=hide
     setlocal noswapfile
