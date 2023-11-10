@@ -61,6 +61,7 @@ function! s:BoundedMovement()
 endfunction
 
 function! s:PipeThroughMca() range
+    silent call s:ApplyCompileSettings()
     let l:mca = systemlist(g:COMPILER_EXPLORER_MCA, ['.intel_syntax'] + getline(a:firstline, a:lastline))
     let l:mcabuf = bufnr('compilerexplorer-mca', 1)
     if bufwinid(l:mcabuf) == -1
