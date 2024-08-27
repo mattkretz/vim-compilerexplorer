@@ -24,12 +24,12 @@ function! s:CompileSettings()
     if exists('g:COMPILER_EXPLORER_COMPILER')
         silent exec ":normal iCompiler: " . g:COMPILER_EXPLORER_COMPILER
     else
-        silent exec ":normal iCompiler: $CXX -O2 -std=c++17 -march=skylake-avx512"
+        silent exec ":normal iCompiler: $CXX -O2 -std=gnu++20 -march=skylake -Wall"
     endif
     if exists('g:COMPILER_EXPLORER_MCA')
         silent exec ":normal oMCA: " . g:COMPILER_EXPLORER_MCA
     else
-        silent exec ":normal oMCA: llvm-mca --mcpu=sandybridge --timeline"
+        silent exec ":normal oMCA: llvm-mca --bottleneck-analysis --dispatch-stats --timeline --mcpu=skylake"
     endif
     let &undolevels = l:old_undolevels
     inoremap <buffer> <CR> <ESC>:call <SID>Compile()<CR>
