@@ -96,7 +96,7 @@ function! s:Compile()
 
     "Start g:COMPILER_EXPLORER_COMPILER . " -x c++ -o - - | egrep -v -e '^\\s+\\.(weak|align|hidden|section|type|file|text|p2align|cfi|size|globl|ident)' -e '^.LF' > ce.tmp"
     silent! let l:tmp = append(line('$'), systemlist(g:COMPILER_EXPLORER_COMPILER . " -x c++ -S -masm=intel -o - - | egrep -v -e '^\\s+\\.(weak|align|hidden|section|type|file|text|p2align|cfi|size|globl|ident)' -e '^.LF' > ce.tmp", bufnr(s:buf_name)))
-    silent! exec ":%s/^<stdin>/ce.cpp/e"
+    silent! exec ":%s/<stdin>/ce.cpp/ge"
     silent! let l:tmp = append(line('$'), systemlist("awk -f ".s:root_path."/ce.awk ce.tmp | c++filt > ce.asm"))
     "silent! let l:tmp = system("sed -n '/\.data/q;p' ce.tmp | " . g:COMPILER_EXPLORER_MCA . " > ce.mca")
     silent! !rm ce.tmp
