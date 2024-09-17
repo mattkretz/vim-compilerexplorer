@@ -101,7 +101,10 @@ function! s:Compile()
     "silent! let l:tmp = system("sed -n '/\.data/q;p' ce.tmp | " . g:COMPILER_EXPLORER_MCA . " > ce.mca")
     silent! !rm ce.tmp
     "silent let l:tmp = append(line('$'), systemlist("rm ce.tmp"))
-    if getline(1, '$') == ['']
+    if getline(1) == ''
+        normal ggdd
+    endif
+    if getline(1) == ''
         bdelete
     else
         cbuffer
